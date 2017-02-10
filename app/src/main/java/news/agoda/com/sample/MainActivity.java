@@ -72,7 +72,7 @@ public class MainActivity
         new Thread(new Runnable() {
             @Override public void run() {
                 try {
-                    URL url = new URL("http://www.mocky.io/v2/573c89f31100004a1daa8adb");
+                    URL url = new URL("https://api.myjson.com/bins/nl6jh");
                     HttpURLConnection con = (HttpURLConnection) url.openConnection();
                     String readStream = readStream(con.getInputStream());
                     callback.onResult(readStream);
