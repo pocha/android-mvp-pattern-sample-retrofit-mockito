@@ -1,11 +1,5 @@
 package news.agoda.com.sample;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,6 +11,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import com.facebook.drawee.backends.pipeline.Fresco;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -97,7 +97,8 @@ public class MainActivity
         return sb.toString();
     }
 
-    @Override public void onResult(final String data) {
+    @Override
+    public void onResult(final String data) {
         handler.postDelayed(new Runnable() {
             @Override public void run() {
                 JSONObject jsonObject;
@@ -105,10 +106,15 @@ public class MainActivity
                 try {
                     jsonObject = new JSONObject(data);
                     JSONArray resultArray = jsonObject.getJSONArray("results");
+                    Log.d(TAG, "json data " + resultArray.toString(2));
+
                     for (int i = 0; i < resultArray.length(); i++) {
                         JSONObject newsObject = resultArray.getJSONObject(i);
-                        NewsEntity newsEntity = new NewsEntity(newsObject);
-                        newsItemList.add(newsEntity);
+                        List<MediaEntity> mediaEntityList = MediaEntity.parseMediaEntities(newsObject);
+                        NewsEntity newsEntity = new NewsEntity(newsObject,mediaEntityList);
+                        if (newsEntity.getTitle() != null) {
+                            newsItemList.add(newsEntity);
+                        }
                     }
                 } catch (JSONException e) {
                     Log.e(TAG, "fail to parse json string");

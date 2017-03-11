@@ -2,6 +2,7 @@ package news.agoda.com.sample;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,8 +31,7 @@ public class NewsListAdapter extends ArrayAdapter {
         NewsEntity newsEntity = (NewsEntity) getItem(position);
         List<MediaEntity> mediaEntityList = newsEntity.getMediaEntity();
         String thumbnailURL = "";
-        MediaEntity mediaEntity = mediaEntityList.get(0);
-        thumbnailURL = mediaEntity.getUrl();
+
 
         ViewHolder viewHolder;
         if (convertView == null) {
@@ -45,9 +45,17 @@ public class NewsListAdapter extends ArrayAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         viewHolder.newsTitle.setText(newsEntity.getTitle());
-        DraweeController draweeController = Fresco.newDraweeControllerBuilder().setImageRequest(ImageRequest.fromUri
-                (Uri.parse(thumbnailURL))).setOldController(viewHolder.imageView.getController()).build();
-        viewHolder.imageView.setController(draweeController);
+        
+        try {
+            MediaEntity mediaEntity = mediaEntityList.get(0);
+            thumbnailURL = mediaEntity.getUrl();
+            DraweeController draweeController = Fresco.newDraweeControllerBuilder().setImageRequest(ImageRequest.fromUri
+                    (Uri.parse(thumbnailURL))).setOldController(viewHolder.imageView.getController()).build();
+            viewHolder.imageView.setController(draweeController);
+        }
+        catch (IndexOutOfBoundsException e){
+            Log.e("NewsListAdapter","No media entity object found for " + newsEntity.getTitle());
+        }
         return convertView;
     }
 }

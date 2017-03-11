@@ -2,11 +2,9 @@ package news.agoda.com.sample;
 
 import android.util.Log;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,30 +12,35 @@ import java.util.List;
  */
 public class NewsEntity {
     private static final String TAG = NewsEntity.class.getSimpleName();
-    private String title;
+    private String title = null;
     private String summary;
     private String articleUrl;
     private String byline;
     private String publishedDate;
     private List<MediaEntity> mediaEntityList;
 
-    public NewsEntity(JSONObject jsonObject) {
-        try {
-            mediaEntityList = new ArrayList<>();
-            title = jsonObject.getString("title");
-            summary = jsonObject.getString("abstract");
+    public NewsEntity(JSONObject jsonObject, List<MediaEntity> _mediaEntityList) {
+            initValue(jsonObject, "title");
+            /*summary = jsonObject.getString("abstract");
             articleUrl = jsonObject.getString("url");
             byline = jsonObject.getString("byline");
-            publishedDate = jsonObject.getString("published_date");
-            JSONArray mediaArray = jsonObject.getJSONArray("multimedia");
-            for (int i = 0; i < mediaArray.length(); i++) {
-                JSONObject mediaObject = mediaArray.getJSONObject(i);
-                MediaEntity mediaEntity = new MediaEntity(mediaObject);
-                mediaEntityList.add(mediaEntity);
+            publishedDate = jsonObject.getString("published_date");*/
+
+            mediaEntityList = _mediaEntityList;
+    }
+
+    private void initValue(JSONObject json, String tag){
+        try {
+            switch (tag){
+                case "title" :
+                    title = json.getString("title");
+                    break;
+                default :
+                    Log.e(TAG,"found unsupported " + tag);
             }
 
-        } catch (JSONException exception) {
-            Log.e(TAG, exception.getMessage());
+        } catch (JSONException e){
+            Log.e(TAG,"malformed " + tag + " skipping it");
         }
     }
 
