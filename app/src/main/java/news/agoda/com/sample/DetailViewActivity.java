@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.URLUtil;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.interfaces.DraweeController;
@@ -47,8 +49,13 @@ public class DetailViewActivity extends Activity {
     }
 
     public void onFullStoryClicked(View view) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(storyURL));
-        startActivity(intent);
+        if (URLUtil.isValidUrl(storyURL)) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(storyURL));
+            startActivity(intent);
+        }
+        else {
+            Toast.makeText(getApplicationContext(),"Invalid url",Toast.LENGTH_SHORT).show();
+        }
     }
 }
