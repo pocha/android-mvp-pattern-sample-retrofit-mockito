@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class MediaEntity {
     private static final String TAG = MediaEntity.class.getSimpleName();
-    private String url;
+    private String url = null;
     private String format;
     private int height;
     private int width;
@@ -33,6 +33,10 @@ public class MediaEntity {
         subType = jsonObject.getString("subtype");
         caption = jsonObject.getString("caption");
         copyright = jsonObject.getString("copyright");*/
+    }
+
+    public MediaEntity(String url){
+        this.url = url;
     }
 
     public static List<MediaEntity> parseMediaEntities(JSONObject newsObject){

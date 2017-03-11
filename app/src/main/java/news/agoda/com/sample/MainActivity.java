@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,17 +13,12 @@ import android.widget.ListView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity
@@ -40,8 +34,6 @@ public class MainActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Fresco.initialize(this);
-
-        newsItemList = new ArrayList<>();
 
         loadResource(this);
     }
@@ -101,24 +93,7 @@ public class MainActivity
     public void onResult(final String data) {
         handler.postDelayed(new Runnable() {
             @Override public void run() {
-                JSONObject jsonObject;
-
-                try {
-                    jsonObject = new JSONObject(data);
-                    JSONArray resultArray = jsonObject.getJSONArray("results");
-                    Log.d(TAG, "json data " + resultArray.toString(2));
-
-                    for (int i = 0; i < resultArray.length(); i++) {
-                        JSONObject newsObject = resultArray.getJSONObject(i);
-                        List<MediaEntity> mediaEntityList = MediaEntity.parseMediaEntities(newsObject);
-                        NewsEntity newsEntity = new NewsEntity(newsObject,mediaEntityList);
-                        if (newsEntity.getTitle() != null) {
-                            newsItemList.add(newsEntity);
-                        }
-                    }
-                } catch (JSONException e) {
-                    Log.e(TAG, "fail to parse json string");
-                }
+                newsItemList = NewsEntity.parseNewsEntities(data);
 
                 NewsListAdapter adapter = new NewsListAdapter(MainActivity.this, R.layout.list_item_news, newsItemList);
                 setListAdapter(adapter);
@@ -129,9 +104,12 @@ public class MainActivity
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         NewsEntity newsEntity = newsItemList.get(position);
-                        String title = newsEntity.getTitle();
+
                         Intent intent = new Intent(MainActivity.this, DetailViewActivity.class);
-                        intent.putExtra("title", title);
+                        intent.putExtra("title", newsEntity.getTitle());
+                        intent.putExtra("storyURL", newsEntity.getUrl());
+                        intent.putExtra("summary", newsEntity.getSummary());
+                        intent.putExtra("imageURL", newsEntity.getImageUrl());
                         startActivity(intent);
                     }
                 });

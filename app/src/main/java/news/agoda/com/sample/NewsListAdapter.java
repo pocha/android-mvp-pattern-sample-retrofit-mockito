@@ -2,13 +2,13 @@ package news.agoda.com.sample;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.DraweeView;
@@ -29,7 +29,6 @@ public class NewsListAdapter extends ArrayAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         NewsEntity newsEntity = (NewsEntity) getItem(position);
-        List<MediaEntity> mediaEntityList = newsEntity.getMediaEntity();
         String thumbnailURL = "";
 
 
@@ -45,17 +44,22 @@ public class NewsListAdapter extends ArrayAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         viewHolder.newsTitle.setText(newsEntity.getTitle());
-        
-        try {
-            MediaEntity mediaEntity = mediaEntityList.get(0);
-            thumbnailURL = mediaEntity.getUrl();
+
+        thumbnailURL = newsEntity.getImageUrl();
+
+        if (thumbnailURL != null) {
             DraweeController draweeController = Fresco.newDraweeControllerBuilder().setImageRequest(ImageRequest.fromUri
                     (Uri.parse(thumbnailURL))).setOldController(viewHolder.imageView.getController()).build();
             viewHolder.imageView.setController(draweeController);
         }
-        catch (IndexOutOfBoundsException e){
-            Log.e("NewsListAdapter","No media entity object found for " + newsEntity.getTitle());
+        else { //use default image if no image url
+            Uri uri = new Uri.Builder()
+                    .scheme(UriUtil.LOCAL_RESOURCE_SCHEME) // "res"
+                    .path(String.valueOf(R.drawable.place_holder))
+                    .build();
+            viewHolder.imageView.setImageURI(uri);
         }
+
         return convertView;
     }
 }
