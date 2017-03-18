@@ -28,12 +28,20 @@ public class MainActivityPresenter {
 
     private String baseUrl = "https://api.myjson.com/";
     private NewsFetch newsFetch;
-    private final MainActivity activity;
+    private MainActivity activity;
+    private Object typeAdapter;
 
-    public MainActivityPresenter(MainActivity _activity) {
+    public MainActivityPresenter(MainActivity _activity){
+        this(_activity, null);
+    }
+
+    public MainActivityPresenter(MainActivity _activity, Object typeAdapter) {
         activity = _activity;
+        if (typeAdapter == null)
+            typeAdapter = new MyDeserializer();
+
         Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(new TypeToken<List<NewsEntity>>() {}.getType(), new MyDeserializer())
+                    .registerTypeAdapter(new TypeToken<List<NewsEntity>>() {}.getType(), typeAdapter)
                     .create();
         newsFetch = new Retrofit.Builder()
                 .baseUrl(baseUrl)
