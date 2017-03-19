@@ -1,5 +1,7 @@
 package news.agoda.com.sample;
 
+import android.content.Intent;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
@@ -29,7 +31,7 @@ public class MainActivityPresenter {
     private String baseUrl = "https://api.myjson.com/";
     private NewsFetch newsFetch;
     private MainActivity activity;
-    private Object typeAdapter;
+    private List<NewsEntity> newsItemList;
 
     public MainActivityPresenter(MainActivity _activity){
         this(_activity, null);
@@ -75,7 +77,7 @@ public class MainActivityPresenter {
                 throws JsonParseException
         {
             // Get the "content" element from the parsed JSON
-            List <NewsEntity> newsItemList = new ArrayList<>();
+            newsItemList = new ArrayList<>();
 
             if (je.getAsJsonObject().get("results").isJsonArray()) {
                 JsonArray results = je.getAsJsonObject().getAsJsonArray("results");
@@ -112,5 +114,16 @@ public class MainActivityPresenter {
             newsEntities.add(newsEntity);
             return newsEntities;
         }
+    }
+
+    public Intent getIntentOnNewsItemClick(int position){
+        NewsEntity newsEntity = newsItemList.get(position);
+
+        Intent intent = new Intent(activity, DetailViewActivity.class);
+        intent.putExtra("title", newsEntity.getTitle());
+        intent.putExtra("storyURL", newsEntity.getUrl());
+        intent.putExtra("summary", newsEntity.getSummary());
+        intent.putExtra("imageURL", newsEntity.getImageUrl());
+        return intent;
     }
 }

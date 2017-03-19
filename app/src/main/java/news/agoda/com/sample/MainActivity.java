@@ -9,9 +9,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity
@@ -19,7 +16,6 @@ public class MainActivity
 {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private List<NewsEntity> newsItemList;
     private NewsListAdapter adapter;
 
     private static MainActivityPresenter presenter;
@@ -28,25 +24,16 @@ public class MainActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Fresco.initialize(this);
 
-        newsItemList = new ArrayList<>();
-        adapter = new NewsListAdapter(MainActivity.this, R.layout.list_item_news, newsItemList);
+        adapter = new NewsListAdapter(MainActivity.this, R.layout.list_item_news);
         setListAdapter(adapter);
-
 
         ListView listView = getListView();
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                NewsEntity newsEntity = newsItemList.get(position);
-
-                Intent intent = new Intent(MainActivity.this, DetailViewActivity.class);
-                intent.putExtra("title", newsEntity.getTitle());
-                intent.putExtra("storyURL", newsEntity.getUrl());
-                intent.putExtra("summary", newsEntity.getSummary());
-                intent.putExtra("imageURL", newsEntity.getImageUrl());
+                Intent intent = presenter.getIntentOnNewsItemClick(position);
                 startActivity(intent);
             }
         });
@@ -77,9 +64,7 @@ public class MainActivity
     }
 
 
-
-    public void onResult(List <NewsEntity> _newsItemList) {
-        newsItemList = _newsItemList;
+    public void onResult(List <NewsEntity> newsItemList) {
         adapter.addAll(newsItemList);
         adapter.notifyDataSetChanged();
     }

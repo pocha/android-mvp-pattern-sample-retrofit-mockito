@@ -14,7 +14,7 @@ import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.DraweeView;
 import com.facebook.imagepipeline.request.ImageRequest;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public class NewsListAdapter extends ArrayAdapter {
     private static class ViewHolder {
@@ -22,8 +22,9 @@ public class NewsListAdapter extends ArrayAdapter {
         DraweeView imageView;
     }
 
-    public NewsListAdapter(Context context, int resource, List objects) {
-        super(context, resource, objects);
+    public NewsListAdapter(Context context, int resource) {
+        super(context, resource, new ArrayList<NewsEntity>());
+        Fresco.initialize(context);
     }
 
     @Override
