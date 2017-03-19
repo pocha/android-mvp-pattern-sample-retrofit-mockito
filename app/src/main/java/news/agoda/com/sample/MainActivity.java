@@ -38,7 +38,8 @@ public class MainActivity
             }
         });
 
-        presenter = new MainActivityPresenter(this);
+        INewsFetchRetrofit newsFetch = NewsFetchRetrofit.getInstance(new NewsDeserializer());
+        presenter = new MainActivityPresenter(this, newsFetch);
     }
 
     @Override
