@@ -45,4 +45,8 @@ public class MainActivityPresenter {
         intent.putExtra("imageURL", newsEntity.getImageUrl());
         return intent;
     }
+
+    public static String getHelloWorldString(){
+        return "hello world";
+    }
 }
