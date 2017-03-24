@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.List;
@@ -15,14 +16,20 @@ import java.util.List;
 public class MainActivityPresenterTest {
     private MainActivityPresenter presenter;
 
-    @Mock MainActivity activity;
-    @Captor private ArgumentCaptor<List<NewsEntity>> listNewsEntityCaptor;
+    @Mock
+    MainActivityView view;
+
+    @Captor
+    private ArgumentCaptor<List<NewsEntity>> listNewsEntityCaptor;
 
     @Test
     public void testHappyFlow() {
+        MockitoAnnotations.initMocks(this);
         MockINewsFetchRetrofit newsFetchRetrofit = MockINewsFetchRetrofit.getInstance();
-        presenter = new MainActivityPresenter(activity,newsFetchRetrofit);
-        Mockito.verify(activity).onResult(listNewsEntityCaptor.capture());
+        presenter = new MainActivityPresenter(newsFetchRetrofit);
+        presenter.attachView(view);
+        presenter.loadData();
+        Mockito.verify(view).onResult(listNewsEntityCaptor.capture());
         Assert.assertEquals(listNewsEntityCaptor.getValue().get(0).getTitle(),"test title");
     }
 }

@@ -1,6 +1,5 @@
 package news.agoda.com.sample;
 
-import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -9,38 +8,46 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.hannesdorfmann.mosby.mvp.MvpActivity;
+
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity
-        extends ListActivity
+        extends  MvpActivity<MainActivityView,MainActivityPresenter> implements MainActivityView
 {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private NewsListAdapter adapter;
 
-    private static MainActivityPresenter presenter;
+
+    @BindView(R.id.listView) ListView listView;
+
+    @Override
+    public MainActivityPresenter createPresenter(){
+        INewsFetchRetrofit newsFetch = NewsFetchRetrofit.getInstance(new NewsDeserializer());
+        return new MainActivityPresenter(newsFetch);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        ButterKnife.bind(this);
         adapter = new NewsListAdapter(MainActivity.this, R.layout.list_item_news);
-        setListAdapter(adapter);
-
-        ListView listView = getListView();
+        listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Intent intent = presenter.getIntentOnNewsItemClick(position);
                 startActivity(intent);
             }
         });
-
-        INewsFetchRetrofit newsFetch = NewsFetchRetrofit.getInstance(new NewsDeserializer());
-        presenter = new MainActivityPresenter(this, newsFetch);
+        presenter.loadData();
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -64,7 +71,7 @@ public class MainActivity
         return super.onOptionsItemSelected(item);
     }
 
-
+    @Override
     public void onResult(List <NewsEntity> newsItemList) {
         adapter.addAll(newsItemList);
         adapter.notifyDataSetChanged();
