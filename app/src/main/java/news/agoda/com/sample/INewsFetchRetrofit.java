@@ -9,8 +9,8 @@ import retrofit2.http.GET;
  * Created by pocha on 19/03/17.
  */
 public interface INewsFetchRetrofit {
-    String baseUrl = "https://api.myjson.com/";
+    String baseUrl = "http://some.domain.com";
 
-    @GET("bins/nl6jh")
+    @GET("/path/to/http")
     Call<List<NewsEntity>> getNews();
 }
